@@ -49,7 +49,7 @@ function getOneFromDB($sql,$result_type=MYSQL_ASSOC){
 	return $row;
 }
 
-function getAllDataByUid($sql){
+function getAllDataById($sql){
 	$result=mysql_query($sql);
 	return $result;
 }
