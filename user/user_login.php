@@ -9,7 +9,7 @@ if($_SERVER['REQUEST_METHOD'] != 'POST'){
 }
 
 $userPhone = $_POST['phone'];
-$pwd = md5($_POST['password']);
+$pwd = $_POST['password'];
 if(!$userPhone || !$pwd){
 	//用户名密码为空
 	echo '101';
@@ -21,15 +21,30 @@ $result = getOneFromDB($sql);
 if($result){
 	//登录成功
 	$sessionid = session_id();
-	setcookie(USER_SESSION,$sessionid,time()+7);
-	setcookie(USER_PHONE,$userPhone,time()+7);
-	setcookie(USER_ID,$result['uid'],time()+7);
+
 	$_SESSION[USER_SESSION] = $sessionid;
 	$_SESSION[USER_PHONE] = $userPhone;
 	$_SESSION[USER_ID] = $result['uid'];
-	echo '1';
+	setcookie(USER_SESSION,$sessionid,time()+7);
+	setcookie(USER_PHONE,$userPhone,time()+7);
+	setcookie(USER_ID,$result['uid'],time()+7);
+
+	$loginArray = array(
+		'resultCode' => 1,
+		'uid' => $result['uid'],
+		'uName' => $result['uName'],
+		'uImg' => $result['uHeadImg'],
+		'uFansCount' => $result['uFansCount'],
+		'uFollowCount' => $result['uFollowCount'],
+		'uReleasCount' => $result['uReleasCount'],
+		'uSexy' => $result['uSexy']
+	);
+	echo json_encode($loginArray,JSON_UNESCAPED_UNICODE);
 
 }else{
 	//用户不存在
-	echo '0';
+	$loginArray = array(
+		'resultCode' => 0
+	);
+	echo json_encode($loginArray,JSON_UNESCAPED_UNICODE);
 }
