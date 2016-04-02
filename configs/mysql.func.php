@@ -10,7 +10,7 @@
 function db_connect(){
 	$connect = mysql_connect(MD_DB_HOST, MD_DB_USER,MD_DB_PASSWORD) or die('数据库连接失败');
 	mysql_select_db(MD_DB_NAME, $connect);
-	mysql_query("set names UTF8", $connect);
+	mysql_query("set names UTF8MB4", $connect);
 	return $connect;
 }
 
@@ -52,4 +52,8 @@ function getOneFromDB($sql,$result_type=MYSQL_ASSOC){
 function getAllDataById($sql){
 	$result=mysql_query($sql);
 	return $result;
+}
+
+function updateOneData($sql){
+	return mysql_query($sql);
 }

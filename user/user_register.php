@@ -23,10 +23,10 @@ if($result){
 	$insertSql = "insert into user(uPhoneNum,uPassword) values('{$userPhone}','{$pwd}')";
 
 	if(oneDataInsert($insertSql)){
-		$resultArray['resultCode'] = '0';
+		$resultArray['resultCode'] = '1';
 		echo json_encode($resultArray);
 	}else{
-		$resultArray['resultCode'] = '404';
+		$resultArray['resultCode'] = '0';
 		echo json_encode($resultArray);
 	}
 	

@@ -26,7 +26,12 @@ while($row = mysql_fetch_array($bbsArray)){
 	$imgLists = array();
 	if($row['uImageCount'] != 0){
 		
-		$imgSql = "select * from images where mid = '{$row['mid']}' ";
+		if($row['mType'] == 0){
+			$imgSql = "select * from images where mid = '{$row['mid']}' ";
+		}else{
+			$imgSql = "select * from images where mid = '{$row['sid']}' ";
+		}
+		
 		$imgResult = getAllDataById($imgSql);
 		while($rowImg = mysql_fetch_array($imgResult)){
 			$rowImgArray = array(
@@ -37,18 +42,51 @@ while($row = mysql_fetch_array($bbsArray)){
 	}
 	$userSql = "select * from user where uid = {$row['nuid']} limit 1 ";
 	$userResult = getOneFromDB($userSql);
-
 	$uName = ($userResult['uid'] == "{$_SESSION[USER_ID]}") ? '我' : $userResult['uName'];
-	$rowArray = array(
-		'uid' => $userResult['uid'],
-		'uHeadImg' => $userResult['uHeadImg'],
-		'uName' => $uName,
-		'mid' => $row['mid'],
-		'content' => $row['mContent'],
-		'date' => $row['mCreateDate'],
-		'imglists' => $imgLists
-	);
-	array_push($listArray, $rowArray);
+
+	$starSql = " SELECT * FROM star where uid = {$_SESSION[USER_ID]} and mid = {$row['mid']}";
+	$is_star = getOneFromDB($starSql) ? '1' : '0';
+
+	if($row['mType'] == 0){
+		$rowArray = array(
+			'uid' => $userResult['uid'],
+			'uHeadImg' => $userResult['uHeadImg'],
+			'uName' => $uName,
+			'mid' => $row['mid'],
+			'content' => $row['mContent'],
+			'date' => $row['mCreateDate'],
+			'location' => $row['mLocation'],
+			'is_star' => $is_star,
+			'mType' => $row['mType'],
+			'imglists' => $imgLists
+		);
+		array_push($listArray, $rowArray);
+	}else{
+		$forwordSql = "select * from message where mid = {$row['sid']} limit 1 ";
+		$forwordResult = getOneFromDB($forwordSql);
+
+		$sourceUserSql = "select * from user where uid = {$forwordResult['uid']} limit 1 ";
+		$sourceUserResult = getOneFromDB($sourceUserSql);
+		$sName = ($sourceUserResult['uid'] == "{$_SESSION[USER_ID]}") ? '我' : $sourceUserResult['uName'];
+		$rowArray = array(
+			'uid' => $userResult['uid'],
+			'uHeadImg' => $userResult['uHeadImg'],
+			'uName' => $uName,
+			'mid' => $row['mid'],
+			'content' => $row['mContent'],
+			'date' => $row['mCreateDate'],
+			'location' => $row['mLocation'],
+			'is_star' => $is_star,
+			'mType' => $row['mType'],
+			'sourceContent' => $forwordResult['mContent'],
+			'sName' => $sName,
+			'sid' => $row['sid'],
+			'suid' => $sourceUserResult['uid'],
+			'imglists' => $imgLists
+		);
+		array_push($listArray, $rowArray);
+	}
+	
 }
 if($listArray){
 	$resultArray = array(

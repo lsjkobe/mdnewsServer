@@ -7,4 +7,4 @@ if(!isLogin()){
 }
 $_SESSION = array(); // 把session清空。
 session_destroy();   // 彻底销毁session
-echo "0";
+echo "1";

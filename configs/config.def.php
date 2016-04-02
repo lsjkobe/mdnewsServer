@@ -1,4 +1,5 @@
 <?php
+define('MY_HOST', 'http://182.254.145.222');
 define('MD_DB_HOST', '127.0.0.1');
 define('MD_DB_USER', 'root');
 define('MD_DB_PASSWORD', 'li936339745');
