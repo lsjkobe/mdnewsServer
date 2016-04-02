@@ -31,6 +31,8 @@ if(empty($_POST['location'])){
 if(oneDataInsert($sql)){
 	// $mid = 
 	insertImages();
+	$updateUser = "update user set uReleasCount = uReleasCount+1 where uid = {$_SESSION[USER_ID]}";
+	updateOneData($updateUser);
 	$arr = array('resultCode'=>1);  
 	echo json_encode($arr);
 }else{
