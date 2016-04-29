@@ -25,9 +25,9 @@ if($result){
 	$_SESSION[USER_SESSION] = $sessionid;
 	$_SESSION[USER_PHONE] = $userPhone;
 	$_SESSION[USER_ID] = $result['uid'];
-	setcookie(USER_SESSION,$sessionid,time()+7);
-	setcookie(USER_PHONE,$userPhone,time()+7);
-	setcookie(USER_ID,$result['uid'],time()+7);
+	setcookie(USER_SESSION,$sessionid,time()+3600);
+	setcookie(USER_PHONE,$userPhone,time()+3600);
+	setcookie(USER_ID,$result['uid'],time()+3600);
 
 	$loginArray = array(
 		'resultCode' => 1,
@@ -37,6 +37,7 @@ if($result){
 		'uFansCount' => $result['uFansCount'],
 		'uFollowCount' => $result['uFollowCount'],
 		'uReleasCount' => $result['uReleasCount'],
+		'uStateContent' => $result['uStateContent'],
 		'uSexy' => $result['uSexy']
 	);
 	echo json_encode($loginArray,JSON_UNESCAPED_UNICODE);

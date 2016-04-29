@@ -1,13 +1,7 @@
 <?php
 require_once '../include.php';
-if(!isLogin()){
-	//未登录或session过期
-	$resultArray = array(
-		'resultCode' => '400'
-		);
-	echo json_encode($resultArray, JSON_UNESCAPED_UNICODE);
-	exit();
-}
+
+$uid = $_GET['uid'];
 
 if(isset($_GET['page'])){
 	$page = $_GET['page'];
@@ -15,7 +9,7 @@ if(isset($_GET['page'])){
 	$page = 1;
 }
 $link = db_connect();
-$countSql = "SELECT count(*) FROM message INNER JOIN relations ON (relations.uid = message.uid and relations.followid = {$_SESSION[USER_ID]})  or message.uid = {$_SESSION[USER_ID]} group by message.mid order by mCreateDate desc";
+$countSql = "SELECT count(*) FROM message WHERE uid = {$uid}  group by mid";
 $pageRow = getAllDataById($countSql);
 
 //每次返回的数量
@@ -28,7 +22,7 @@ $pageCount = ceil(mysql_num_rows($pageRow)/$pagesize);
 
 //获取关注人和自己的信息列表(内连接优化查询)
 //$sql  = "SELECT *,message.uid as nuid  FROM message INNER JOIN relations ON (relations.followid = message.uid or message.uid = {$_SESSION[USER_ID]}) and relations.uid = {$_SESSION[USER_ID]} order by mCreateDate desc";
-$sql  = "SELECT *, message.uid as nuid FROM message INNER JOIN relations ON (relations.uid = message.uid and relations.followid = {$_SESSION[USER_ID]})  or message.uid = {$_SESSION[USER_ID]} group by message.mid order by mCreateDate desc limit {$pageOffset},{$pagesize}";
+$sql  = "SELECT * FROM message WHERE uid = {$uid} group by mid order by mCreateDate desc limit {$pageOffset},{$pagesize}";
 $bbsArray =  getAllDataById($sql);
 
 $listArray = array();
@@ -56,7 +50,7 @@ while($row = mysql_fetch_array($bbsArray)){
 			}
 		}
 	}
-	$userSql = "select * from user where uid = {$row['nuid']} limit 1 ";
+	$userSql = "select * from user where uid = {$row['uid']} limit 1 ";
 	$userResult = getOneFromDB($userSql);
 	$uName = ($userResult['uid'] == "{$_SESSION[USER_ID]}") ? '我' : $userResult['uName'];
 	//是否赞
