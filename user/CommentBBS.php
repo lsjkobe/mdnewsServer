@@ -22,7 +22,9 @@ if(empty($_FILES['imgSrc']['name'])){
 	}
 }
 
-if(oneDataInsert($commentSql)){
+//评论+1
+$updateSql = "UPDATE message SET mCommentCount = mCommentCount+1 WHERE mid = {$mid} ";
+if(oneDataInsert($commentSql) && updateOneData($updateSql)){
 	echo '1';
 }else{
 	echo '0';

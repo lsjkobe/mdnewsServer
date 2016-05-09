@@ -37,6 +37,9 @@ if($sid == -1){
 }
 
 if(oneDataInsert($sql)){
+	//更新发布圈子数+1
+	$updateUser = "update user set uReleasCount = uReleasCount+1 where uid = {$_SESSION[USER_ID]}";
+	updateOneData($updateUser);
 	$arr = array('resultCode'=>1);  
 	echo json_encode($arr);
 }else{

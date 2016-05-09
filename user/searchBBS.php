@@ -1,34 +1,10 @@
 <?php
 require_once '../include.php';
-if(!isLogin()){
-	//未登录或session过期
-	$resultArray = array(
-		'resultCode' => '400'
-		);
-	echo json_encode($resultArray, JSON_UNESCAPED_UNICODE);
-	exit();
-}
 
-if(isset($_GET['page'])){
-	$page = $_GET['page'];
-}else{
-	$page = 1;
-}
-$link = db_connect();
-$countSql = "SELECT count(*) FROM message INNER JOIN relations ON (relations.uid = message.uid and relations.followid = {$_SESSION[USER_ID]})  or message.uid = {$_SESSION[USER_ID]} group by message.mid order by mCreateDate desc";
-$pageRow = getAllDataById($countSql);
+$keyWord = $_GET['keyWord'];
 
-//每次返回的数量
-$pagesize=10;
-$pageOffset = $pagesize * ($page-1);
-$pageCount = ceil(mysql_num_rows($pageRow)/$pagesize);
-// $sql = "select * from message where uid = 1 ";
-//获取关注人和自己的信息列表
-// $sql = "select * from message where uid in (select followid from relations where relations.uid = {$_SESSION[USER_ID]} ) or uid = {$_SESSION[USER_ID]} order by mCreateDate";
-
-//获取关注人和自己的信息列表(内连接优化查询)
-//$sql  = "SELECT *,message.uid as nuid  FROM message INNER JOIN relations ON (relations.followid = message.uid or message.uid = {$_SESSION[USER_ID]}) and relations.uid = {$_SESSION[USER_ID]} order by mCreateDate desc";
-$sql  = "SELECT *, message.uid as nuid FROM message INNER JOIN relations ON (relations.uid = message.uid and relations.followid = {$_SESSION[USER_ID]})  or message.uid = {$_SESSION[USER_ID]} group by message.mid order by mCreateDate desc limit {$pageOffset},{$pagesize}";
+$link = db_connect(); 
+$sql  = "SELECT * FROM message WHERE mContent LIKE '%{$keyWord}%' group by mid order by mCreateDate desc";
 $bbsArray =  getAllDataById($sql);
 
 $listArray = array();
@@ -56,7 +32,7 @@ while($row = mysql_fetch_array($bbsArray)){
 			}
 		}
 	}
-	$userSql = "select * from user where uid = {$row['nuid']} limit 1 ";
+	$userSql = "select * from user where uid = {$row['uid']} limit 1 ";
 	$userResult = getOneFromDB($userSql);
 	$uName = ($userResult['uid'] == "{$_SESSION[USER_ID]}") ? '我' : $userResult['uName'];
 	//是否赞
@@ -75,10 +51,7 @@ while($row = mysql_fetch_array($bbsArray)){
 			'location' => $row['mLocation'],
 			'is_star' => $is_star,
 			'mType' => $row['mType'],
-			'imglists' => $imgLists,
-			'mCommentCount' => $row['mCommentCount'], 
-			'mForwardCount' => $row['mForwardCount'],
-			'mStar' => $row['mStar']
+			'imglists' => $imgLists
 		);
 		array_push($listArray, $rowArray);
 	}else{
@@ -110,10 +83,7 @@ while($row = mysql_fetch_array($bbsArray)){
 			'sid' => $row['sid'],
 			'suid' => $sourceUserResult['uid'],
 			's_is_star' => $s_is_star,
-			'imglists' => $imgLists,
-			'mCommentCount' => $row['mCommentCount'], 
-			'mForwardCount' => $row['mForwardCount'],
-			'mStar' => $row['mStar']
+			'imglists' => $imgLists
 		);
 		array_push($listArray, $rowArray);
 	}
@@ -122,7 +92,6 @@ while($row = mysql_fetch_array($bbsArray)){
 if($listArray){
 	$resultArray = array(
 		'lists' => $listArray ,
-		'pageCount' => $pageCount,
 		'resultCode' => '1'
 		);
 	echo json_encode($resultArray, JSON_UNESCAPED_UNICODE);

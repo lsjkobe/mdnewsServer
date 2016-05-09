@@ -31,6 +31,7 @@ if(empty($_POST['location'])){
 if(oneDataInsert($sql)){
 	// $mid = 
 	insertImages();
+	//更新发布圈子数+1
 	$updateUser = "update user set uReleasCount = uReleasCount+1 where uid = {$_SESSION[USER_ID]}";
 	updateOneData($updateUser);
 	$arr = array('resultCode'=>1);  
