@@ -57,6 +57,9 @@ while($row = mysql_fetch_array($bbsArray)){
 	$starSql = " SELECT * FROM star where uid = {$_SESSION[USER_ID]} and mid = {$row['mid']}";
 	$is_star = getOneFromDB($starSql) ? '1' : '0';
 
+	//是否收藏
+	$collectSql = " SELECT * FROM collection where uid = {$_SESSION[USER_ID]} and mid = {$row['mid']}";
+	$is_collect = getOneFromDB($collectSql) ? '1' : '0';
 	//原创圈子
 	if($row['mType'] == 0){
 		$rowArray = array(
@@ -68,6 +71,7 @@ while($row = mysql_fetch_array($bbsArray)){
 			'date' => $row['mCreateDate'],
 			'location' => $row['mLocation'],
 			'is_star' => $is_star,
+			'is_collect' => $is_collect ,
 			'mType' => $row['mType'],
 			'imglists' => $imgLists
 		);
@@ -95,6 +99,7 @@ while($row = mysql_fetch_array($bbsArray)){
 			'date' => $row['mCreateDate'],
 			'location' => $row['mLocation'],
 			'is_star' => $is_star,
+			'is_collect' => $is_collect ,
 			'mType' => $row['mType'],
 			'sourceContent' => $forwordResult['mContent'],
 			'sName' => $sName,

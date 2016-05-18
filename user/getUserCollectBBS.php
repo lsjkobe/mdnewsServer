@@ -1,10 +1,26 @@
 <?php
 require_once '../include.php';
 
-$keyWord = $_GET['keyWord'];
+if(isset($_GET['page'])){
+	$page = $_GET['page'];
+}else{
+	$page = 1;
+}
+$link = db_connect();
+$countSql = "SELECT * FROM collection INNER JOIN message ON (collection.mid = message.mid AND collection.uid={$_SESSION[USER_ID]}) group by collection.mid";
+$pageRow = getAllDataById($countSql);
 
-$link = db_connect(); 
-$sql  = "SELECT * FROM message WHERE mContent LIKE '%{$keyWord}%' group by mid order by mCreateDate desc";
+//每次返回的数量
+$pagesize=10;
+$pageOffset = $pagesize * ($page-1);
+$pageCount = ceil(mysql_num_rows($pageRow)/$pagesize);
+// $sql = "select * from message where uid = 1 ";
+//获取关注人和自己的信息列表
+// $sql = "select * from message where uid in (select followid from relations where relations.uid = {$_SESSION[USER_ID]} ) or uid = {$_SESSION[USER_ID]} order by mCreateDate";
+
+//获取关注人和自己的信息列表(内连接优化查询)
+//$sql  = "SELECT *,message.uid as nuid  FROM message INNER JOIN relations ON (relations.followid = message.uid or message.uid = {$_SESSION[USER_ID]}) and relations.uid = {$_SESSION[USER_ID]} order by mCreateDate desc";
+$sql  = "SELECT *, message.uid as cuid FROM collection INNER JOIN message ON (collection.mid = message.mid AND collection.uid={$_SESSION[USER_ID]}) group by collection.mid order by mCreateDate desc limit {$pageOffset},{$pagesize}";
 $bbsArray =  getAllDataById($sql);
 
 $listArray = array();
@@ -32,7 +48,7 @@ while($row = mysql_fetch_array($bbsArray)){
 			}
 		}
 	}
-	$userSql = "select * from user where uid = {$row['uid']} limit 1 ";
+	$userSql = "select * from user where uid = {$row['cuid']} limit 1 ";
 	$userResult = getOneFromDB($userSql);
 	$uName = ($userResult['uid'] == "{$_SESSION[USER_ID]}") ? '我' : $userResult['uName'];
 	//是否赞
@@ -97,6 +113,7 @@ while($row = mysql_fetch_array($bbsArray)){
 if($listArray){
 	$resultArray = array(
 		'lists' => $listArray ,
+		'pageCount' => $pageCount,
 		'resultCode' => '1'
 		);
 	echo json_encode($resultArray, JSON_UNESCAPED_UNICODE);
