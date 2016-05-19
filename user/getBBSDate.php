@@ -79,6 +79,9 @@ while($row = mysql_fetch_array($bbsArray)){
 			'is_star' => $is_star,
 			'is_collect' => $is_collect ,
 			'mType' => $row['mType'],
+			'mCommentCount' => $row['mCommentCount'],
+			'mForwardCount' => $row['mForwardCount'],
+			'mStar' => $row['mStar'],
 			'imglists' => $imgLists
 		);
 		array_push($listArray, $rowArray);
@@ -107,6 +110,9 @@ while($row = mysql_fetch_array($bbsArray)){
 			'is_star' => $is_star,
 			'is_collect' => $is_collect ,
 			'mType' => $row['mType'],
+			'mCommentCount' => $row['mCommentCount'],
+			'mForwardCount' => $row['mForwardCount'],
+			'mStar' => $row['mStar'],
 			'sourceContent' => $forwordResult['mContent'],
 			'sName' => $sName,
 			'sid' => $row['sid'],
